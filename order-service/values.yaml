@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: order-service          # or your actual image name
+  repository: orderservice-order-service
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -11,17 +11,17 @@ service:
 
 resources:
   requests:
-    cpu: 250m
-    memory: 512Mi
+    cpu: 300m
+    memory: 640Mi
   limits:
-    cpu: 700m
+    cpu: 800m
     memory: 1Gi
 
 env:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/orders
+  SPRING_DATASOURCE_URL: jdbc:postgresql://order-postgres:5432/orders
   SPRING_DATASOURCE_USERNAME: orderuser
   SPRING_DATASOURCE_PASSWORD: orderpass
-  SPRING_DATA_REDIS_HOST: host.docker.internal
+  SPRING_DATA_REDIS_HOST: order-redis
   SPRING_DATA_REDIS_PORT: "6379"
   SPRING_CACHE_TYPE: redis
 
@@ -29,7 +29,7 @@ livenessProbe:
   httpGet:
     path: /actuator/health
     port: 8080
-  initialDelaySeconds: 50
+  initialDelaySeconds: 60
   periodSeconds: 15
   timeoutSeconds: 5
   failureThreshold: 3
@@ -38,7 +38,7 @@ readinessProbe:
   httpGet:
     path: /actuator/health
     port: 8080
-  initialDelaySeconds: 35
+  initialDelaySeconds: 40
   periodSeconds: 8
   timeoutSeconds: 3
   failureThreshold: 3
