@@ -2,8 +2,8 @@ name: Build and Deploy to GKE
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:   # allows manual trigger
+    branches: [ "master" ]
+  workflow_dispatch:
 
 env:
   PROJECT_ID: order-service-gke-demo
@@ -19,7 +19,7 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write   # needed for Workload Identity Federation (recommended)
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -28,19 +28,17 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: 'projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          workload_identity_provider: 'projects/106131383245/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions@order-service-gke-demo.iam.gserviceaccount.com'
-
-      # Temporary simple way (we will improve to Workload Identity later)
-      # For now we will use a service account key (less secure but easier to start)
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      - name: Build and Push Docker image
+      - name: Build & Push Docker image
         run: |
           IMAGE_URI="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}"
           docker build --platform linux/amd64 -t $IMAGE_URI .
@@ -60,4 +58,4 @@ jobs:
             --create-namespace \
             --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }} \
             --set image.tag=${{ github.sha }} \
-            --wait
+            --wait --timeout 5m
