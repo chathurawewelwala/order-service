@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: orderservice-order-service
+  repository: asia-south1-docker.pkg.dev/order-service-gke-demo/order-service/order-service
   tag: "latest"
   pullPolicy: IfNotPresent
 
