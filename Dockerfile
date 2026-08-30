@@ -26,11 +26,21 @@ FROM eclipse-temurin:26-jre
 WORKDIR /app
 
 RUN groupadd -r spring && useradd -r -g spring spring
+
+# Create directory for heap dumps
+RUN mkdir -p /app/dumps && chown spring:spring /app/dumps
+
 USER spring:spring
 
 COPY --from=builder /app/target/*.jar app.jar
 
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+# JVM options with HeapDump on OOM
+ENV JAVA_OPTS="-XX:+UseContainerSupport \
+               -XX:MaxRAMPercentage=75.0 \
+               -XX:+UseG1GC \
+               -XX:+HeapDumpOnOutOfMemoryError \
+               -XX:HeapDumpPath=/app/dumps/heapdump.hprof \
+               -XX:+ExitOnOutOfMemoryError"
 
 EXPOSE 8080
 
