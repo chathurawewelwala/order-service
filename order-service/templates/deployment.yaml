@@ -44,3 +44,15 @@ spec:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
+          volumeMounts:
+            - name: dumps
+              mountPath: /app/dumps
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: dumps
+          persistentVolumeClaim:
+            claimName: {{ include "order-service.fullname" . }}-dumps
+        - name: logs
+        persistentVolumeClaim:
+          claimName: {{ include "order-service.fullname" . }}-logs
