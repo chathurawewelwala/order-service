@@ -1,0 +1,13 @@
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: order-service
+  namespace: orders
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: order-service
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 30s
