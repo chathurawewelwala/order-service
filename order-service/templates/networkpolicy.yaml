@@ -12,40 +12,10 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow traffic from anywhere on port 8080 (needed for GKE Ingress)
+    # Allow all incoming traffic on port 8080 (needed for GKE Ingress + internal)
     - ports:
         - protocol: TCP
           port: 8080
   egress:
-    # Allow DNS
-    - to:
-        - namespaceSelector: {}
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-    # Allow traffic to PostgreSQL
-    - to:
-        - podSelector:
-            matchLabels:
-              app: order-postgres
-      ports:
-        - protocol: TCP
-          port: 5432
-    # Allow traffic to Redis
-    - to:
-        - podSelector:
-            matchLabels:
-              app: order-redis
-      ports:
-        - protocol: TCP
-          port: 6379
-    # Allow external HTTPS (Artifact Registry, APIs, etc.)
-    - to:
-        - namespaceSelector: {}
-      ports:
-        - protocol: TCP
-          port: 443
-        - protocol: TCP
-          port: 80
+    # Allow everything for now (we can restrict later)
+    - {}
