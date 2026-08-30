@@ -19,8 +19,6 @@ resources:
 
 env:
   SPRING_DATASOURCE_URL: jdbc:postgresql://order-postgres:5432/orders
-  SPRING_DATASOURCE_USERNAME: orderuser
-  SPRING_DATASOURCE_PASSWORD: orderpass
   SPRING_DATA_REDIS_HOST: order-redis
   SPRING_DATA_REDIS_PORT: "6379"
   SPRING_CACHE_TYPE: redis

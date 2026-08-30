@@ -27,6 +27,17 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            # Inject database credentials from Kubernetes Secret
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: order-db-secret
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: order-db-secret
+                  key: POSTGRES_PASSWORD
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
