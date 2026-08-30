@@ -16,6 +16,24 @@ spec:
       labels:
         {{- include "order-service.selectorLabels" . | nindent 8 }}
     spec:
+      # Make PVC mounts writable by non-root user (spring)
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      # Ensure mount paths are owned correctly on first start (GCE PD / empty PVC)
+      initContainers:
+        - name: fix-logs-perms
+          image: busybox:1.36
+          command: ["sh", "-c", "mkdir -p /app/logs /app/dumps && chown -R 1000:1000 /app/logs /app/dumps"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: dumps
+              mountPath: /app/dumps
+            - name: logs
+              mountPath: /app/logs
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
