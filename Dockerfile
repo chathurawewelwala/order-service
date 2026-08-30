@@ -21,7 +21,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # ========== Stage 2: Runtime ==========
-FROM eclipse-temurin:26-jre
+FROM eclipse-temurin:26-jdk
 
 WORKDIR /app
 
