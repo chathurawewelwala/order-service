@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 3
 
 image:
   repository: asia-south1-docker.pkg.dev/order-service-gke-demo/order-service/order-service
@@ -14,8 +14,8 @@ resources:
     cpu: 300m
     memory: 640Mi
   limits:
-    cpu: 800m
-    memory: 1Gi
+    cpu: 900m
+    memory: 1280Mi
 
 env:
   SPRING_DATASOURCE_URL: jdbc:postgresql://order-postgres:5432/orders
@@ -40,3 +40,6 @@ readinessProbe:
   periodSeconds: 8
   timeoutSeconds: 3
   failureThreshold: 3
+
+ingress:
+  enabled: true
