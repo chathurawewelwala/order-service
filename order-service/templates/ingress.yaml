@@ -19,4 +19,4 @@ spec:
                 name: {{ include "order-service.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
-  {{- end }}
+{{- end }}
