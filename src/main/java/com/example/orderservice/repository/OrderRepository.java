@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByCustomerId(String customerId);
+
+    /** Lab #3: product_code is not indexed. */
+    List<Order> findByProductCode(String productCode);
 }
