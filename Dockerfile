@@ -25,15 +25,10 @@ FROM eclipse-temurin:26-jdk
 
 WORKDIR /app
 
-# Fixed UID/GID 1000 so it matches Deployment securityContext.fsGroup / runAsUser
-RUN groupadd -r -g 1000 spring && useradd -r -u 1000 -g spring spring
-
-# Directories for logs and heap dumps (PVC mounts over these;
-# initContainer + fsGroup make the volume writable by UID 1000)
 RUN mkdir -p /app/dumps /app/logs \
-    && chown -R spring:spring /app/dumps /app/logs
+    && chown -R 1000:1000 /app/dumps /app/logs
 
-USER spring:spring
+USER 1000:1000
 
 COPY --from=builder /app/target/*.jar app.jar
 
