@@ -2,6 +2,13 @@ spring:
   application:
     name: order-service
 
+  spring:
+    security:
+      oauth2:
+        resourceserver:
+          jwt:
+            issuer-uri: http://34.180.9.126/realms/orders
+
   datasource:
     url: jdbc:postgresql://localhost:5432/orders
     username: orderuser
@@ -55,3 +62,7 @@ logging:
   level:
     com.example.orderservice: INFO
     org.hibernate.SQL: WARN
+
+app:
+  cors:
+    allowed-origins: http://localhost:4200

@@ -16,7 +16,10 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.3.3
-          args: ["start-dev"]
+          args:
+            - start-dev
+            - --http-enabled=true
+            - --hostname-strict=false
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME
               value: admin
@@ -26,8 +29,12 @@ spec:
               value: "true"
             - name: KC_HOSTNAME_STRICT
               value: "false"
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
             - name: KC_PROXY_HEADERS
               value: xforwarded
+            - name: KC_HEALTH_ENABLED
+              value: "true"
           ports:
             - name: http
               containerPort: 8080
@@ -35,8 +42,14 @@ spec:
             httpGet:
               path: /realms/master
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 40
             periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /realms/master
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
 ---
 apiVersion: v1
 kind: Service
