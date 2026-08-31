@@ -58,6 +58,5 @@ jobs:
             --create-namespace \
             --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }} \
             --set image.tag=${{ github.sha }} \
-            --wait \
             --timeout 15m \
             --atomic
