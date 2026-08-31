@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "order-service.labels" . | nindent 4 }}
   annotations:
+    kubernetes.kubernetes.io/ingress.global-static-ip-name: "order-service-ip"
     kubernetes.kubernetes.io/ingress.class: "gce"
     kubernetes.kubernetes.io/ingress.allow-http: "true"
 spec:
