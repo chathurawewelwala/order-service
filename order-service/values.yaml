@@ -1,4 +1,4 @@
-replicaCount: 3
+replicaCount: 2
 
 image:
   repository: asia-south1-docker.pkg.dev/order-service-gke-demo/order-service/order-service
@@ -22,30 +22,42 @@ env:
   SPRING_DATA_REDIS_HOST: order-redis
   SPRING_DATA_REDIS_PORT: "6379"
   SPRING_CACHE_TYPE: redis
+  # Kubernetes probe endpoints (do not require DB for liveness)
+  MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+  MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED: "true"
+  MANAGEMENT_HEALTH_READINESSSTATE_ENABLED: "true"
+
+# Startup: allow slow JVM + Hibernate to finish (failureThreshold * periodSeconds = 5 min)
+startupProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
 
 livenessProbe:
   httpGet:
-    path: /actuator/health
+    path: /actuator/health/liveness
     port: 8080
-  initialDelaySeconds: 60
   periodSeconds: 15
   timeoutSeconds: 5
   failureThreshold: 3
 
 readinessProbe:
   httpGet:
-    path: /actuator/health
+    path: /actuator/health/readiness
     port: 8080
-  initialDelaySeconds: 40
-  periodSeconds: 8
-  timeoutSeconds: 3
+  periodSeconds: 10
+  timeoutSeconds: 5
   failureThreshold: 3
 
 ingress:
   enabled: true
 
 persistence:
-  enabled: true
+  enabled: false
   dumps:
     size: 2Gi
   logs:

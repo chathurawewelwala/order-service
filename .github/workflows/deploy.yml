@@ -51,6 +51,18 @@ jobs:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.REGION }}
 
+      - name: Ensure DB secret exists
+        run: |
+          if ! kubectl get secret order-db-secret -n ${{ env.NAMESPACE }} >/dev/null 2>&1; then
+            kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+            kubectl create secret generic order-db-secret -n ${{ env.NAMESPACE }} \
+              --from-literal=POSTGRES_USER=orderuser \
+              --from-literal=POSTGRES_PASSWORD=orderpass
+            echo "Created order-db-secret"
+          else
+            echo "order-db-secret already exists"
+          fi
+
       - name: Deploy with Helm
         run: |
           helm upgrade --install order-service ./order-service \
@@ -59,4 +71,19 @@ jobs:
             --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }} \
             --set image.tag=${{ github.sha }} \
             --wait \
-            --timeout 5m
+            --timeout 15m \
+            --atomic
+
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "=== PODS ==="
+          kubectl get pods -n ${{ env.NAMESPACE }} -o wide || true
+          echo "=== DEPLOYMENT ==="
+          kubectl describe deployment -n ${{ env.NAMESPACE }} order-service || true
+          echo "=== EVENTS ==="
+          kubectl get events -n ${{ env.NAMESPACE }} --sort-by='.lastTimestamp' | tail -40 || true
+          echo "=== LOGS ==="
+          kubectl logs -n ${{ env.NAMESPACE }} -l app.kubernetes.io/name=order-service --tail=100 || true
+          echo "=== PREVIOUS LOGS ==="
+          kubectl logs -n ${{ env.NAMESPACE }} -l app.kubernetes.io/name=order-service --previous --tail=100 || true

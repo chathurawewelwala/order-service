@@ -16,7 +16,6 @@ spec:
       labels:
         {{- include "order-service.selectorLabels" . | nindent 8 }}
     spec:
-      # Non-root + fsGroup so volume mounts are writable by UID 1000
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
@@ -48,6 +47,10 @@ spec:
                   key: POSTGRES_PASSWORD
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -58,8 +61,6 @@ spec:
             - name: logs
               mountPath: /app/logs
       volumes:
-        # emptyDir works with multiple replicas (RWO PVCs do not).
-        # Logs also go to stdout via Logback CONSOLE appender (kubectl logs).
         - name: dumps
           emptyDir: {}
         - name: logs
