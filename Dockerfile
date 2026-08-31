@@ -25,6 +25,9 @@ FROM eclipse-temurin:26-jdk
 
 WORKDIR /app
 
+# eclipse-temurin already has UID/GID 1000 (ubuntu). Reuse them so this
+# matches Deployment securityContext runAsUser/fsGroup: 1000.
+# Do not groupadd/useradd 1000 — that fails with "GID already exists".
 RUN mkdir -p /app/dumps /app/logs \
     && chown -R 1000:1000 /app/dumps /app/logs
 

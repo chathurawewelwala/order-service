@@ -2,17 +2,17 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <property name="LOG_PATH" value="/app/logs"/>
-    <property name="LOG_FILE" value="${LOG_PATH}/order-service"/>
+    <property name="LOG_PATH" value="${LOG_PATH:-/app/logs}"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH}/order-service}"/>
 
-    <!-- Console appender (still useful) -->
+    <!-- Always log to stdout (kubectl logs / Cloud Logging) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Daily rolling file appender - keep 7 days -->
+    <!-- File logging on emptyDir/PVC; do not fail startup if path is missing -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}.log</file>
         <encoder>
