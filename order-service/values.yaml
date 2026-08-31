@@ -26,9 +26,10 @@ env:
   MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
   MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED: "true"
   MANAGEMENT_HEALTH_READINESSSTATE_ENABLED: "true"
-  # Keyclock Auth end points
+  # OAuth2 Resource Server
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://34.180.9.126/realms/orders"
   APP_CORS_ALLOWED_ORIGINS: "http://localhost:4200"
+
 
 # Startup: allow slow JVM + Hibernate to finish (failureThreshold * periodSeconds = 5 min)
 startupProbe:
