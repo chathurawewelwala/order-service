@@ -35,14 +35,17 @@ USER 1000:1000
 
 COPY --from=builder /app/target/*.jar app.jar
 
-# JVM options with HeapDump on OOM
+# JVM options: G1 + heap dump on OOM + GC log for the RCA lab.
+# exec below makes `java` PID 1 so `jcmd 1 ...` works after kubectl exec.
 ENV JAVA_OPTS="-XX:+UseContainerSupport \
                -XX:MaxRAMPercentage=75.0 \
                -XX:+UseG1GC \
+               -XX:MaxGCPauseMillis=200 \
                -XX:+HeapDumpOnOutOfMemoryError \
                -XX:HeapDumpPath=/app/dumps/heapdump.hprof \
-               -XX:+ExitOnOutOfMemoryError"
+               -XX:+ExitOnOutOfMemoryError \
+               -Xlog:gc*:file=/app/logs/gc.log:time,uptime,level,tags:filecount=5,filesize=20M"
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

@@ -64,6 +64,9 @@ docker exec -it order-postgres psql -U orderuser -d orders
 | `kubectl exec -it deploy/order-service -n orders -- env` | Run `env` command inside a pod of the deployment |
 | `kubectl top pods -n orders` | Show real-time CPU / Memory usage of pods |
 | `kubectl top nodes` | Show real-time CPU / Memory usage of nodes |
+| `kubectl exec -it <pod-name> -n orders -- bash` | Get a shell inside the pod (if it’s still running) |
+| `jcmd 1 GC.run_finalization` | Inside the pod (if jmap/jcmd available) |
+| `jcmd 1 VM.native_memory` | Inside the pod (if jmap/jcmd available) |
 
 ---
 
